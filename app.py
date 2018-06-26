@@ -3,6 +3,7 @@ import os
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from scipy.stats import norm
 
 
 app = dash.Dash(__name__)
@@ -17,13 +18,27 @@ app.layout = html.Div([
         options=[{'label': i, 'value': i} for i in ['LA', 'NYC', 'MTL']],
         value='LA'
     ),
-    html.Div(id='display-value')
+    html.Div(id='display-value'),
+    dcc.Input(id='input-prob', value='initial value', type='text'),
+    html.Button(id='submit-button', n_clicks=0, children='Submit'),
+    html.Div(id='div-prob')
 ])
+
+
+
 
 @app.callback(dash.dependencies.Output('display-value', 'children'),
               [dash.dependencies.Input('dropdown', 'value')])
 def display_value(value):
     return 'You have selected "{}"'.format(value)
+
+@app.callback(
+    Output(component_id='div-prob', component_property='children'),
+    [Input(component_id='submit-button',component_property='n_clicks')],
+    [State('input-prob','value')])
+def update_output(n_clicks,input-value):
+    r = norm.ppf(input_value)
+    return 'Z score is "{}", tries "{}"'.format(r,n_clicks)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
