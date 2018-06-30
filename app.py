@@ -25,7 +25,7 @@ app.layout = html.Div([
         value='LA'
     ),
     html.Div(id='display-value'),
-    dcc.Input(id='input-prob', value='initial value', type='text'),
+    dcc.Input(id='input-prob', value='0.95', type='text'),
     html.Button(id='submit-button', n_clicks=0, children='Submit'),
     html.Div(id='div-prob')
 ])
@@ -44,13 +44,14 @@ def display_value(value):
 def update_output(n_clicks,input):
     ap=10
     p=0
+    v=1-float(input)
     for index,row in df.iterrows():
-        d = abs(row['probability']-input)
+        d = abs(row['probability']-v)
         if d < ap:
             ap = d
             p = row['probability']
     r=df.loc[df['probability']==p,'z']
-    return 'z is "{}", tries "{}"'.format(r.iloc[1] if input>0.5 else r.iloc[0],n_clicks)
+    return 'z is "{}", tries "{}"'.format(abs(r.iloc[0]),n_clicks)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
